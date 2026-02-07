@@ -1,0 +1,210 @@
+{
+  "name": "linecount",
+  "displayName": "LineCount",
+  "description": "Display line count badges in the VS Code file explorer with real-time updates, color-coded thresholds, comment/blank breakdown, interactive dashboard, and git-aware statistics.",
+  "version": "0.1.0",
+  "publisher": "AmanERP",
+  "author": "AmanERP",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other",
+    "Visualization"
+  ],
+  "keywords": [
+    "line count",
+    "file explorer",
+    "code metrics",
+    "productivity",
+    "badge",
+    "statistics"
+  ],
+  "icon": "resources/images/logo.png",
+  "galleryBanner": {
+    "color": "#2C2C32",
+    "theme": "dark"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Aman-CERP/linecount.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Aman-CERP/linecount/issues"
+  },
+  "homepage": "https://github.com/Aman-CERP/linecount#readme",
+  "activationEvents": [
+    "onView:explorer"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "linecount.refresh",
+        "title": "LineCount: Refresh All Counts",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "linecount.showSummary",
+        "title": "LineCount: Show Workspace Summary"
+      },
+      {
+        "command": "linecount.exportReport",
+        "title": "LineCount: Export Report"
+      },
+      {
+        "command": "linecount.showDashboard",
+        "title": "LineCount: Open Dashboard"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "linecount.refresh",
+          "when": "view == explorer",
+          "group": "navigation"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "linecount-sidebar",
+          "title": "LineCount",
+          "icon": "resources/icons/linecount.svg"
+        }
+      ]
+    },
+    "views": {
+      "linecount-sidebar": [
+        {
+          "type": "webview",
+          "id": "linecount.dashboardView",
+          "name": "Dashboard"
+        },
+        {
+          "id": "linecount.languageView",
+          "name": "By Language"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "LineCount",
+      "properties": {
+        "linecount.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable/disable line count badges in the file explorer."
+        },
+        "linecount.excludeDirectories": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "node_modules",
+            ".git",
+            "dist",
+            "build",
+            "out",
+            "bin",
+            "obj",
+            ".vscode",
+            ".idea",
+            "vendor",
+            "coverage",
+            ".next",
+            ".nuxt",
+            "target",
+            ".cache"
+          ],
+          "description": "Directories to exclude from line counting."
+        },
+        "linecount.sizeLimit": {
+          "type": "number",
+          "default": 5000000,
+          "description": "Maximum file size in bytes for exact line counting. Larger files will be estimated."
+        },
+        "linecount.debounceDelay": {
+          "type": "number",
+          "default": 300,
+          "minimum": 50,
+          "maximum": 5000,
+          "description": "Debounce delay in milliseconds for badge updates after file changes."
+        },
+        "linecount.warningThreshold": {
+          "type": "number",
+          "default": 500,
+          "description": "Line count threshold for yellow warning badge color."
+        },
+        "linecount.errorThreshold": {
+          "type": "number",
+          "default": 1000,
+          "description": "Line count threshold for red error badge color."
+        },
+        "linecount.showStatusBar": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show line count breakdown in the status bar for the active file."
+        },
+        "linecount.displayFormat": {
+          "type": "string",
+          "enum": [
+            "abbreviated",
+            "exact"
+          ],
+          "default": "abbreviated",
+          "description": "Badge display format: 'abbreviated' (1.2K) or 'exact' (1234)."
+        },
+        "linecount.includeExtensions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Additional file extensions to include (e.g., ['.custom', '.myext'])."
+        },
+        "linecount.excludeExtensions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "File extensions to exclude from line counting."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc --noEmit",
+    "build": "bun esbuild.js",
+    "build:prod": "bun esbuild.js --production",
+    "watch": "bun esbuild.js --watch",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "test:unit": "bun test",
+    "test:integration": "vscode-test",
+    "test": "bun test && vscode-test",
+    "pretest": "bun run build",
+    "vscode:prepublish": "bun run build:prod",
+    "package": "vsce package --no-dependencies",
+    "publish:vsce": "vsce publish --no-dependencies",
+    "publish:ovsx": "ovsx publish --no-dependencies"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.85.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.4.0",
+    "@vscode/vsce": "^3.0.0",
+    "esbuild": "^0.21.0",
+    "eslint": "^9.0.0",
+    "ovsx": "^0.9.0",
+    "prettier": "^3.3.0",
+    "typescript": "^5.5.0"
+  }
+}
